@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProducts, addToCart } from '../redux/cartSlice';
+import axios from 'axios';
+import { setProducts, setLoading, setError, addToCart } from '../redux/cartSlice';
 import ProductItem from './ProductItem';
 
 const ProductList = () => {
@@ -8,10 +9,20 @@ const ProductList = () => {
   const { products, status, error } = useSelector((state) => state.cart);
 
   useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchProducts());
+    const fetchProducts = async () => {
+      dispatch(setLoading()); // Set status to 'loading'
+      try {
+        const response = await axios.get('https://6784b24f1ec630ca33a5366f.mockapi.io/Products');
+        dispatch(setProducts(response.data)); // Store fetched products in Redux
+      } catch (error) {
+        dispatch(setError(error.message)); // Store error message in Redux
+      }
+    };
+
+    if (status === 'idle' && products.length === 0) {
+      fetchProducts();
     }
-  }, [dispatch, status]);
+  }, [dispatch, status, products.length]);
 
   const handleAddToCart = (product) => {
     dispatch(addToCart(product));
@@ -22,7 +33,7 @@ const ProductList = () => {
   }
 
   if (status === 'failed') {
-    return <div className="text-center py-12"><p className="text-lg text-red-600">Error: {error}</p></div>;
+    return <div className="text-center py-12"><p className="text-lg text-red-600">Error: {error || 'Something went wrong'}</p></div>;
   }
 
   return (
