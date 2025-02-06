@@ -10,12 +10,12 @@ const ProductList = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      dispatch(setLoading()); // Set status to 'loading'
+      dispatch(setLoading()); 
       try {
         const response = await axios.get('https://6784b24f1ec630ca33a5366f.mockapi.io/Products');
-        dispatch(setProducts(response.data)); // Store fetched products in Redux
+        dispatch(setProducts(response.data)); 
       } catch (error) {
-        dispatch(setError(error.message)); // Store error message in Redux
+        dispatch(setError(error.message)); 
       }
     };
 
